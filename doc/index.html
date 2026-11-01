@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拡張的数譜</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 {
+      border-bottom: 2px solid #eaecef;
+      padding-bottom: 0.3em;
+    }
+    h2 {
+      border-bottom: 1px solid #eaecef;
+      padding-bottom: 0.3em;
+      margin-top: 1.5em;
+    }
+    h3 {
+      margin-top: 1.2em;
+    }
+    h4 {
+      margin-top: 1em;
+    }
+    code {
+      background-color: rgba(27, 31, 35, 0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 85%;
+    }
+    ul, ol {
+      padding-left: 2em;
+    }
+    li {
+      margin-bottom: 0.3em;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>拡張的数譜</h1>
+
+  <h2>概要</h2>
+  <p>数譜とは素数大富豪における試合の記録を行うための記法である 2018年にカステラ氏によって提案された「標準的数譜」をベースに，可読性を担保しつつプログラム等で処理しやすいフォーマットに成形した「拡張的数譜」を提案する</p>
+
+  <h2>編集履歴</h2>
+  <ul>
+    <li>v0.0.1: 初版作成</li>
+  </ul>
+
+  <h2>フォーマット</h2>
+  <ul>
+    <li>
+      初期手札<br>
+      <code>{プレイヤー名}:{初期手札}</code>
+    </li>
+    <li>
+      2ターン目以降<br>
+      <code>{プレイヤー名}:{革命状態},{ドロー},{行動}{特殊}{上がり},{ペナルティ}</code>
+    </li>
+  </ul>
+
+  <h3>共通の表記ルール</h3>
+  <ul>
+    <li>プレイヤーの行動を1ターンと定義し，1ターンにつき1行で記載する</li>
+    <li>
+      各カードの表記は以下のとおりとする
+      <ul>
+        <li>エース(1): <code>A</code></li>
+        <li>2〜9: <code>2</code> 〜 <code>9</code> (アラビア数字)</li>
+        <li>10: <code>T</code></li>
+        <li>ジャック(11): <code>J</code></li>
+        <li>クイーン(12): <code>Q</code></li>
+        <li>キング(13): <code>K</code></li>
+        <li>ジョーカー: <code>X</code></li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>フォーマットの詳細</h2>
+
+  <h3><code>{プレイヤー名}</code></h3>
+  <ul>
+    <li>プレイヤーを識別する文字列</li>
+    <li>区切り文字の判別を行うため，<code>,</code> や <code>:</code> は使用してはならない</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>,</code> および <code>:</code> 以外の1文字以上</li>
+  </ul>
+
+  <h3><code>{初期手札}</code></h3>
+  <ul>
+    <li>初期手札を示す文字列</li>
+    <li>初期手札のカードを丸括弧で囲む</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>S({初期手札のカード})</code> が1回</li>
+    <li><code>{初期手札のカード}</code> は <code>A23456789TJQKX</code> の中から1文字以上</li>
+  </ul>
+
+  <h3><code>{革命状態}</code></h3>
+  <ul>
+    <li>革命状態を示す文字列</li>
+    <li>革命状態である場合は，プレイヤーの区切り文字（<code>:</code>）の直後に <code>[R]</code> を記載する</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>{革命状態}</code> は 0回または1回</li>
+    <li><code>{革命状態}</code> の内容は <code>[R]</code></li>
+  </ul>
+
+  <h3><code>{ドロー}</code></h3>
+  <ul>
+    <li>プレイヤーがカードをドローしたときに示す文字列</li>
+    <li>ドローしたカードを丸括弧で囲む</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li>
+      <code>D({ドローしたカード})</code> が0回または1回
+      <ul>
+        <li><code>{ドローしたカード}</code> は <code>A23456789TJQKX</code> の中から1文字</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>M({行動})</h3>
+  <ul>
+    <li>プレイヤーの行動を示す文字列</li>
+    <li>行動内容を括弧で囲む パスの場合は <code>%</code> を使用する</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>M({行動内容})</code> が0回または1回</li>
+    <li><code>{行動内容}</code> は以下のいずれか</li>
+  </ul>
+  <ol>
+    <li>
+      <code>{場に出したカード}</code>(<code>={素因数場に出したカード}</code>)(<code>|X={ジョーカーの代わりの数}</code>...)
+      <ul>
+        <li><code>{場に出したカード}</code> は <code>A23456789TJQKX</code> の中から1文字以上</li>
+        <li>
+          <code>{素因数場に出したカード}</code> は素因数場用文字 <code>A23456789TJQKX*^</code> の中から1文字以上
+          <ul>
+            <li>素因数場にカードが出た場合，<code>{場に出したカード}</code> の後ろに <code>=</code> を付け，その後に <code>{素因数場に出したカード}</code> を記載する</li>
+          </ul>
+        </li>
+        <li>
+          <code>{ジョーカーの代わりの数}</code> は <code>0A23456789TJQKX</code> の中から1文字
+          <ul>
+            <li><code>{場に出したカード}</code> または <code>{素因数場に出したカード}</code> の中に <code>X</code> が含まれていた場合，後ろに <code>|X=</code> を付け，その後に <code>{ジョーカーの代わりの数}</code> を記載する</li>
+            <li><code>{ジョーカーの代わりの数}</code> は，<code>A</code> が <code>1</code>，<code>T</code> が <code>10</code>，<code>J</code> が <code>11</code>，<code>Q</code> が <code>12</code>，<code>K</code> が <code>13</code> を表す</li>
+            <li>ジョーカーが2枚以上ある場合は，<code>|X={ジョーカーの代わりの数}|X={ジョーカーの代わりの数}</code> のように続けて記載する このとき，<code>{場に出したカード}</code> および <code>{素因数場に出したカード}</code> に含まれる <code>X</code> の順序と一致させること</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><code>%</code> （1文字）</li>
+  </ol>
+
+  <h3><code>{特殊}</code></h3>
+  <ul>
+    <li><code>{場に出したカード}</code> の内容に応じて記載する文字列</li>
+    <li>四角括弧で内容を囲んで表記する</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li>
+      <code>[GC]</code>，<code>[RR]</code>，または <code>[IN]</code> が0回または1回
+      <ul>
+        <li><code>[GC]</code> は <code>{場に出したカード}</code> の数値が 57 のときに記載する</li>
+        <li><code>[RR]</code> は <code>{場に出したカード}</code> の数値が 1729 のときに記載する</li>
+        <li><code>[IN]</code> は <code>{場に出したカード}</code> が <code>X</code> 1文字のときに記載する</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3><code>{上がり}</code></h3>
+  <ul>
+    <li>あがり（ゲーム終了）を示す文字列</li>
+    <li><code>#</code> を記載する</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>#</code> が0回または1回</li>
+  </ul>
+
+  <h3><code>{ペナルティ}</code></h3>
+  <ul>
+    <li>プレイヤーがペナルティを受ける際に示す文字列</li>
+    <li>ペナルティの内容を丸括弧で囲む</li>
+    <li>山札がないためにカードを引けない場合においても記載する（ペナルティのカードがない場合は <code>P()</code> と記載する）</li>
+  </ul>
+  <h4>表記ルール</h4>
+  <ul>
+    <li><code>P({ペナルティを受けるカード})</code> が0回または1回</li>
+    <li><code>{ペナルティを受けるカード}</code> は <code>A23456789TJQKX</code> の中から0文字以上</li>
+  </ul>
+
+</body>
+</html>
+
