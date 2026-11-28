@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>拡張的数譜変換ツール</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 10px;
+    font-family: sans-serif;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+h2 {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+.container {
+    display: flex;
+    gap: 10px;
+    height: calc(100vh - 260px);
+}
+
+textarea {
+    flex: 1;
+    resize: none;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.usage {
+    margin-top: 0;
+    margin-bottom: 29px;
+}
+
+.controls {
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>拡張的数譜変換ツール</h1>
+<div>
+    素数大富豪における標準的数譜を拡張的数譜に変換するツールです<br>
+    拡張的数譜については<a href="https://prinum2357.github.io/pkqens/docs">こちら</a>をご覧ください
+</div>
+
+<h2>使い方</h2>
+<div class="usage">
+    入力のテキストエリア(左側)に標準的数譜を入力すると，出力のテキストエリア(右側)に拡張的数譜が生成されます<br>
+    Copy ボタンを押すと出力のテキストエリアの内容がクリップボードにコピーされます
+</div>
+
+<div class="controls">
+    <button onclick="copyOutput()">Copy</button>
+</div>
+
+<div class="container">
+    <textarea id="input" placeholder="入力"></textarea>
+    <textarea id="output" placeholder="出力" readonly></textarea>
+</div>
+
+<script>
+function parseLine(line) {
+    line = line.trim();
+
+    const idx = line.indexOf(":");
+
+    const player = line.substring(0, idx);
+    let remain = line.substring(idx + 1);
+
+    //----------------------------------
+    // Starthand
+    //----------------------------------
+    let m = remain.match(/^\(([^)]*)\)$/);
+
+    if (m) {
+        return `${player}:S(${m[1]})`;
+    }
+
+    let draw = "";
+    let special = "";
+    let finish = "";
+    let penalty = "";
+
+    //----------------------------------
+    // Draw
+    //----------------------------------
+    m = remain.match(/D\(([A2-9TJQKX])\)/);
+
+    if (m) {
+        const card = m[1];
+        draw = `D(${card}),`;
+        remain = remain.replace(`D(${card})`, "");
+    }
+
+    //----------------------------------
+    // Special
+    //----------------------------------
+    m = remain.match(/\[(GC|RR|IN)\]/);
+
+    if (m) {
+        special = `[${m[1]}]`;
+        remain = remain.replace(special, "");
+    }
+
+    //----------------------------------
+    // Finish
+    //----------------------------------
+    if (remain.includes("#")) {
+        finish = "#";
+        remain = remain.replace("#", "");
+    }
+
+    //----------------------------------
+    // Penalty
+    //----------------------------------
+    m = remain.match(/,P\(([A2-9TJQKX]+)\)/);
+
+    if (m) {
+        const cards = m[1];
+        penalty = `,P(${cards})`;
+        remain = remain.replace(`,P(${cards})`, "");
+    }
+
+    //----------------------------------
+    // Move
+    //----------------------------------
+    const move = `M(${remain})`;
+
+    return `${player}:${draw}${move}${special}${finish}${penalty}`;
+}
+
+function convertText() {
+
+    const input = document.getElementById("input").value;
+
+    const lines = input.split(/\r?\n/);
+
+    const result = [];
+
+    for (const line of lines) {
+
+        if (line.trim() === "") {
+            result.push("");
+            continue;
+        }
+
+        result.push(parseLine(line));
+    }
+
+    document.getElementById("output").value =
+        result.join("\n");
+}
+
+async function copyOutput() {
+
+    const text =
+        document.getElementById("output").value;
+
+    await navigator.clipboard.writeText(text);
+
+    alert("コピーしました");
+}
+
+document.getElementById("input").addEventListener(
+    "input",
+    convertText
+);
+</script>
+
+</body>
+</html>
