@@ -132,7 +132,7 @@ function parseLine(line) {
     //----------------------------------
     // Penalty
     //----------------------------------
-    m = remain.match(/,P\(([A2-9TJQKX]+)\)/);
+    m = remain.match(/,P\(([A2-9TJQKX].*)\)/);
 
     if (m) {
         const cards = m[1];
